@@ -1,0 +1,3 @@
+--
+CREATE DATABASE healthiq WITH ENCODING='UTF8';
+
