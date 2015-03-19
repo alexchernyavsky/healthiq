@@ -1,0 +1,14 @@
+[
+    {
+        "type": "FOOD",
+        "hour": 8,
+        "minute": 0,
+        "index":111
+    },
+    {
+        "type": "FOOD",
+        "hour": 12,
+        "minute": 0,
+        "index": 68
+    }
+]
