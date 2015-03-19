@@ -70,6 +70,7 @@ public class BloodSugarRateCalculatorAutoTest {
 	@Test
 	public void calculate_using_one_food_one_ex_activities_success() {
 
+
 		ArrayList<ActivityInfo> aInfoList = (ArrayList) ActivityInfo.fromJSONArray(testLoadOneFoodOneExActivitiesJson);
 
 		Assert.assertTrue(aInfoList != null);
@@ -106,4 +107,29 @@ public class BloodSugarRateCalculatorAutoTest {
 		Assert.assertTrue(!glycationTimeLine.isEmpty());
 
 	}
+
+	@Test
+	public void retrieve_list_of_exercise_activities_success() {
+
+		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+
+		List<ActivityInfo> aList = calculator.getExerciseActivities();
+		Assert.assertTrue(aList != null);
+		Assert.assertTrue(aList.size() == 6);
+
+
+	}
+
+	@Test
+	public void retrieve_list_of_food_activities_success() {
+
+		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+
+		List<ActivityInfo> aList = calculator.getFoodActivities();
+		Assert.assertTrue(aList != null);
+		Assert.assertTrue(aList.size() == 112);
+
+
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.healthiq.business;
 
+import com.healthiq.dao.ActivityDAO;
 import com.healthiq.info.ActivityInfo;
 import com.healthiq.util.ActivityHelper;
 import com.sun.jmx.remote.internal.ArrayQueue;
@@ -155,5 +156,35 @@ public class BloodSugarRateCalculator {
 	 */
 	public List<Integer> getGlycationTimeLine() {
 		return _glycationTimeLine;
+	}
+
+	/**
+	 * Get the list of exercise activities
+	 *
+	 * @return - List of exercise activities
+	 */
+	public List<ActivityInfo> getExerciseActivities() {
+		try {
+			ActivityDAO dao = new ActivityDAO(_propertiesMap);
+			return dao.retrieveExerciseActivities();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Get the list of food activities
+	 *
+	 * @return - List of food activities
+	 */
+	public List<ActivityInfo> getFoodActivities() {
+		try {
+			ActivityDAO dao = new ActivityDAO(_propertiesMap);
+			return dao.retrieveFoodActivities();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

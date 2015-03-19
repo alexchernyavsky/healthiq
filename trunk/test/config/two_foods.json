@@ -3,12 +3,14 @@
         "type": "FOOD",
         "hour": 8,
         "minute": 0,
-        "index": 40
+        "index": 40,
+        "name":""
     },
     {
         "type": "FOOD",
         "hour": 10,
         "minute": 0,
-        "index": 50
+        "index": 50,
+        "name":""
     }
 ]

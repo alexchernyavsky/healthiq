@@ -30,6 +30,9 @@ public class ActivityInfo {
 	@SerializedName("index")
 	@Expose
 	private Integer index;
+	@SerializedName("name")
+	@Expose
+	private String name;
 
 	public static ActivityInfo fromJSON(String jsonData) {
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -40,6 +43,14 @@ public class ActivityInfo {
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		ActivityInfo[] objs = gson.fromJson(jsonData, ActivityInfo[].class);
 		return new ArrayList<>(Arrays.asList(objs));
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getType() {
