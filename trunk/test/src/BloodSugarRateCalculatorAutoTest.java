@@ -54,8 +54,16 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		List<Double> bloodSugarTimeLine = BloodSugarRateCalculator.calculateBloodSugar(aInfoList);
+		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+		calculator.buildTimeLines(aInfoList);
+
+		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
 		Assert.assertTrue(bloodSugarTimeLine != null);
+		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+
+		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+		Assert.assertTrue(glycationTimeLine != null);
+		Assert.assertTrue(!glycationTimeLine.isEmpty());
 
 	}
 
@@ -66,8 +74,16 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		List<Double> bloodSugarTimeLine = BloodSugarRateCalculator.calculateBloodSugar(aInfoList);
+		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+		calculator.buildTimeLines(aInfoList);
+
+		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
 		Assert.assertTrue(bloodSugarTimeLine != null);
+		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+
+		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+		Assert.assertTrue(glycationTimeLine != null);
+		Assert.assertTrue(!glycationTimeLine.isEmpty());
 
 	}
 
@@ -78,8 +94,16 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		List<Double> bloodSugarTimeLine = BloodSugarRateCalculator.calculateBloodSugar(aInfoList);
+		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+		calculator.buildTimeLines(aInfoList);
+
+		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
 		Assert.assertTrue(bloodSugarTimeLine != null);
+		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+
+		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+		Assert.assertTrue(glycationTimeLine != null);
+		Assert.assertTrue(!glycationTimeLine.isEmpty());
 
 	}
 }

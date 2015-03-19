@@ -3,11 +3,11 @@
         "type": "FOOD",
         "hour": 8,
         "minute": 0,
-        "index": 68
+        "index": 111
     },
     {
         "type": "EXERCISE",
-        "hour": 10,
+        "hour": 9,
         "minute": 0,
         "index": 20
     }

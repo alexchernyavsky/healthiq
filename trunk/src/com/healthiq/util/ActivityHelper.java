@@ -5,6 +5,10 @@ import com.healthiq.info.ActivityInfo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Holds utility and helper methods for the application
@@ -15,37 +19,21 @@ import java.math.RoundingMode;
 
 public class ActivityHelper {
 
-	//TODO globals for now will move to a property file later
-	public static Integer NORMAL_SUGAR_COUNT = 80;
-	public static Integer NORMALIZATION_RATE = 1;
-	public static Integer FOOD_RATE_DURATION_MIN = 120;
-	public static Integer EXERCISE_RATE_DURATION_MIN = 60;
-	public static Integer MINUTES_IN_TIME_LINE = 480;
-	public static Integer DAY_BEGINNING_HOUR = 8;
-	public static Integer GLYCATION_LEVEL = 150;
-
 	/**
-	 * Calculates increase or decrease in blood sugar level
+	 * Calculates rate change per minute for a given activity
 	 *
-	 * @param aType        - Activity type
-	 * @param currentLevel - current blood sugar level
-	 * @param index        - glycemic or exercise index
-	 * @return - Change rate per minute (positive or negative
+	 * @param properties - System properties map
+	 * @param aInfo      - Activity info object
+	 * @return - Rate increase/decrease value
 	 */
-	public static Double calculateBloodSugarRateChangePerMinute(String aType, Double currentLevel, Integer index) {
+	public static Double calculateActivityRateChangePerMinute(Map<String, String> properties, ActivityInfo aInfo) {
 		double ratePerMinute = 0.0;
 
-		if (aType.equals(ActivityType.NO_ACTIVITY.toString()))
-			if (currentLevel < NORMAL_SUGAR_COUNT) {
-				ratePerMinute = NORMALIZATION_RATE;
-			} else {
-				ratePerMinute = -NORMALIZATION_RATE;
-			}
 
-		else if (aType.equals(ActivityType.FOOD.toString())) {
-			ratePerMinute = roundRate(index / (double) FOOD_RATE_DURATION_MIN);
-		} else if (aType.equals(ActivityType.EXERCISE.toString())) {
-			ratePerMinute = roundRate(index / (double) EXERCISE_RATE_DURATION_MIN) * -1.0;
+		if (aInfo.getType().equals(ActivityType.FOOD.toString())) {
+			ratePerMinute = roundRate(aInfo.getIndex() / Double.parseDouble(properties.get("FOOD_RATE_DURATION_MIN")));
+		} else if (aInfo.getType().equals(ActivityType.EXERCISE.toString())) {
+			ratePerMinute = roundRate(aInfo.getIndex() / Double.parseDouble(properties.get("EXERCISE_RATE_DURATION_MIN"))) * -1.0;
 		}
 
 		return ratePerMinute;
@@ -54,17 +42,18 @@ public class ActivityHelper {
 	/**
 	 * Calculate activity's last index
 	 *
+	 * @param properties - System properties map
 	 * @param startIndex - Activity start index
 	 * @param timeLength - Duration in minutes
 	 * @return - Last activity index
 	 */
-	public static Integer calculateEndIndex(Integer startIndex, Integer timeLength) {
+	public static Integer calculateEndIndex(Map<String, String> properties, Integer startIndex, Integer timeLength) {
 
 		int endIndex = startIndex + timeLength;
-
+		int minutesIntTimeLine = Integer.parseInt(properties.get("MINUTES_IN_TIME_LINE"));
 		//do not continue past the end of the timeline
-		if (endIndex > ActivityHelper.MINUTES_IN_TIME_LINE) {
-			endIndex = ActivityHelper.MINUTES_IN_TIME_LINE;
+		if (endIndex > minutesIntTimeLine) {
+			endIndex = minutesIntTimeLine;
 		}
 		return endIndex;
 	}
@@ -72,15 +61,16 @@ public class ActivityHelper {
 	/**
 	 * Return activity's duration
 	 *
+	 * @param properties   - System properties map
 	 * @param activityType - Type of activity
 	 * @return - Duration value
 	 */
-	public static Integer getTimeLengthForActivity(String activityType) {
+	public static Integer getTimeLengthForActivity(Map<String, String> properties, String activityType) {
 
 		if (activityType.equals(ActivityType.EXERCISE.toString())) {
-			return EXERCISE_RATE_DURATION_MIN;
+			return Integer.parseInt(properties.get("EXERCISE_RATE_DURATION_MIN"));
 		} else if (activityType.equals(ActivityType.FOOD.toString())) {
-			return FOOD_RATE_DURATION_MIN;
+			return Integer.parseInt(properties.get("FOOD_RATE_DURATION_MIN"));
 		} else {
 			return 0;
 		}
@@ -89,11 +79,13 @@ public class ActivityHelper {
 	/**
 	 * Find out starting index for an activity
 	 *
-	 * @param aInfo - Activity info object
+	 * @param properties - System properties map
+	 * @param aInfo      - Activity info object
 	 * @return - Activity's begin index
 	 */
-	public static Integer calculateActivityStartIndex(ActivityInfo aInfo) {
-		return ((aInfo.getHour() - DAY_BEGINNING_HOUR) * 60) + aInfo.getMinute();
+	public static Integer calculateActivityStartIndex(Map<String, String> properties, ActivityInfo aInfo) {
+		return ((aInfo.getHour() - Integer.parseInt(properties.get("DAY_BEGINNING_HOUR"))) *
+				Integer.parseInt(properties.get("MINUTES_IN_HOUR"))) + aInfo.getMinute();
 	}
 
 	/**
@@ -104,5 +96,43 @@ public class ActivityHelper {
 	 */
 	public static Double roundRate(Double val) {
 		return new BigDecimal(val.toString()).setScale(2, RoundingMode.CEILING.HALF_UP).doubleValue();
+	}
+
+	/**
+	 * Calculates sum total of all increase/decrease rates for a given minute
+	 *
+	 * @param allActivitiesList - List of all activitites
+	 * @param index             - Represents a minute in timeline
+	 * @return - Sum total
+	 */
+	public static Double calculateSugarInOneMinuteOfTimeLine(List<List<Double>> allActivitiesList, Integer index) {
+
+		double totalRateValue = 0.0;
+		for (List aList : allActivitiesList) {
+			totalRateValue += (double) aList.get(index);
+		}
+		return totalRateValue;
+	}
+
+	/**
+	 * Builds an activity timeline for a given ActivityInfo object
+	 *
+	 * @param properties - System properties map
+	 * @param aInfo      - Activity info object
+	 * @return - List representing Activity timeline
+	 */
+	public static List<Double> buildActivityTimeLine(Map<String, String> properties, ActivityInfo aInfo) {
+		List<Double> aTimeLine = new ArrayList<>(Collections.nCopies(Integer.parseInt(properties.get("MINUTES_IN_TIME_LINE")), 0.0));
+
+		int startIndex = ActivityHelper.calculateActivityStartIndex(properties, aInfo);
+		int timeLength = ActivityHelper.getTimeLengthForActivity(properties, aInfo.getType());
+		int endIndex = ActivityHelper.calculateEndIndex(properties, startIndex, timeLength);
+		double rateValuePerMinute = ActivityHelper.calculateActivityRateChangePerMinute(properties, aInfo);
+
+		for (int i = startIndex; i < endIndex; i++) {
+			aTimeLine.set(i, rateValuePerMinute);
+		}
+
+		return aTimeLine;
 	}
 }

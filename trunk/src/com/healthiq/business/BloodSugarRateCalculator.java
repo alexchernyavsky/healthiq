@@ -2,11 +2,11 @@ package com.healthiq.business;
 
 import com.healthiq.info.ActivityInfo;
 import com.healthiq.util.ActivityHelper;
-import com.healthiq.util.ActivityType;
+import com.sun.jmx.remote.internal.ArrayQueue;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.*;
 
 /**
  * Holds main business logic
@@ -17,8 +17,60 @@ import java.util.List;
 public class BloodSugarRateCalculator {
 
 	//initialize time line array
-	private static List<Double> bloodSugarTimeLine = new ArrayList<>(Collections.nCopies(ActivityHelper.MINUTES_IN_TIME_LINE, 0.0));
-	private static List<Integer> glycationTimeLine = new ArrayList<>(Collections.nCopies(ActivityHelper.MINUTES_IN_TIME_LINE, 0));
+	private List<Double> _bloodSugarTimeLine;
+	private List<Integer> _glycationTimeLine;
+	//keep property values as strings in case if strings are added later
+	private Map<String, String> _propertiesMap;
+
+	/**
+	 * Constructor
+	 *
+	 * @param configPath - Configuration path
+	 */
+	public BloodSugarRateCalculator(String configPath) {
+
+		try {
+			//initialize properties
+			Properties props = buildProperties(configPath + File.separator + "system.properties");
+
+			//build properties Map for further use (more generic)
+			if (props != null) {
+				_propertiesMap = new HashMap<String, String>();
+				for (String key : props.stringPropertyNames()) {
+					_propertiesMap.put(key, props.getProperty(key));
+				}
+			}
+
+			if (_propertiesMap == null || _propertiesMap.isEmpty()) {
+				throw new Exception("Failed to initialize properties");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Build a properties object for a given path
+	 *
+	 * @param configPath Path to the properties file
+	 * @return Properties object
+	 * @throws Exception
+	 */
+	private static Properties buildProperties(String configPath) throws Exception {
+		Properties prop;
+
+		File config = new File(configPath);
+
+
+		FileInputStream fileInput = new FileInputStream(config);
+		prop = new Properties();
+		prop.load(fileInput);
+		fileInput.close();
+
+
+		return prop;
+	}
 
 	/**
 	 * Main method for calculating sugar level values
@@ -26,118 +78,82 @@ public class BloodSugarRateCalculator {
 	 * @param listOfActivities - List of Activity objects
 	 * @return - List with sugar levels
 	 */
-	public static List<Double> calculateBloodSugar(List<ActivityInfo> listOfActivities) {
+	public void buildTimeLines(List<ActivityInfo> listOfActivities) {
 
+		//initialize timelines
+		int minutesInTimeLine = Integer.parseInt(_propertiesMap.get("MINUTES_IN_TIME_LINE"));
+		_bloodSugarTimeLine = new ArrayList<>(Collections.nCopies(minutesInTimeLine, 0.0));
+		_glycationTimeLine = new ArrayList<>(Collections.nCopies(minutesInTimeLine, 0));
+		List<List<Double>> allActivitiesList = new ArrayQueue<>(listOfActivities.size());
 
-		//1. For each activity in the list
-		//a. find out rate value
-		//b. begin to add/subtract rate to every minute of activity's duration
-		//c. identify gaps of no activity
-		//i. pick into the next activity's hour
-		//  if it's not immediately after the current activity ended
-		// begin to stabilize sugar level by increasing or decreasing the level
-		// depending on the current blood sugar count
-
-		// Keep stabilizing until next activity begins or
-		// 80 is reached in which case, fill in the rest of the
-		// timeline with 80 until beginning of the next activity
-
-		//Glycation index can be updated during same pass, just check the current value after it's been updated
-
-		int currActivityIndex = -1;
-		int activityStartIndex = 0;
-		double currentRate = ActivityHelper.NORMAL_SUGAR_COUNT;
-
+		//build a timeline for each activity
 		for (ActivityInfo aInfo : listOfActivities) {
 
-			activityStartIndex = ActivityHelper.calculateActivityStartIndex(aInfo);
-			int timeLength = ActivityHelper.getTimeLengthForActivity(aInfo.getType());
-
-			//identify a gap between activities and fill it
-			if (activityStartIndex > (currActivityIndex + 1)) {
-				//when calculating length, subtract one, because this is the index for the next activity
-				int adjustmentLength = (activityStartIndex - currActivityIndex - 1);
-				currentRate = adjustNoActivityTimeLineValues(currentRate, currActivityIndex, adjustmentLength);
-				currActivityIndex += adjustmentLength;
-			}
-			//readjust already set values, e.g. an activity begins before previous one ends
-			else if (activityStartIndex < currActivityIndex) {
-				//TODO work in progress
-				//get the last sugar rate before this activity begins
-				double tempRate = bloodSugarTimeLine.get(activityStartIndex - 1);
-				//find out rate of change
-				double tempAddend = ActivityHelper.calculateBloodSugarRateChangePerMinute(aInfo.getType(), tempRate, aInfo.getIndex());
-				//set time values and get the  new rate
-				currentRate = setTimeLineValues(currentRate, activityStartIndex, timeLength, tempAddend);
-
-			}
-
-			//find out rate of change
-			double addend = ActivityHelper.calculateBloodSugarRateChangePerMinute(aInfo.getType(), currentRate, aInfo.getIndex());
-
-			//set time values and get the  new rate
-			double newRate = setTimeLineValues(currentRate, activityStartIndex, timeLength, addend);
-
-			//update current values
-			currActivityIndex += timeLength;
-			currentRate = newRate;
-
+			allActivitiesList.add(ActivityHelper.buildActivityTimeLine(_propertiesMap, aInfo));
 		}
 
-		return bloodSugarTimeLine;
+		double currentRate = 0.0;
+		int currGlycation = 0;
+		int normalSugarCount = Integer.valueOf(_propertiesMap.get("NORMAL_SUGAR_COUNT"));
+		int normalizationRate = Integer.valueOf(_propertiesMap.get("NORMALIZATION_RATE"));
+		int glycationBeginsLevel = Integer.valueOf(_propertiesMap.get("GLYCATION_BEGINS_LEVEL"));
+		int glycationIncrement = Integer.valueOf(_propertiesMap.get("GLYCATION_INCREMENT"));
+
+		//combine all timelines into one and add values to the glycation table
+		for (int i = 0; i < minutesInTimeLine; i++) {
+			double sumRate = ActivityHelper.calculateSugarInOneMinuteOfTimeLine(allActivitiesList, i);
+
+			//day starts at a certain level
+			if (i == 0) {
+				currentRate = normalSugarCount;
+			}
+
+			//handle normalization
+			if (sumRate == 0 && (currentRate > 0 && currentRate != normalizationRate)) {
+				if (currentRate > normalSugarCount) {
+					currentRate -= normalizationRate;
+					//round to NORMAL_SUGAR_COUNT
+					currentRate = currentRate < normalSugarCount ? normalSugarCount : currentRate;
+				} else if (currentRate < normalSugarCount) {
+					currentRate += normalizationRate;
+					//round to NORMAL_SUGAR_COUNT
+					currentRate = currentRate > normalSugarCount ? normalSugarCount : currentRate;
+				}
+			}
+
+			currentRate += sumRate;
+			currentRate = ActivityHelper.roundRate(currentRate);
+			_bloodSugarTimeLine.set(i, currentRate);
+
+			//process glycation
+			if (currentRate > glycationBeginsLevel) {
+				currGlycation += glycationIncrement;
+
+				_glycationTimeLine.set(i, currGlycation);
+			}
+
+			//reset current glycation when blood sugar normalizes
+			if (currentRate == normalizationRate) {
+				currGlycation = 0;
+			}
+		}
 	}
 
 	/**
-	 * Sets sugar level values for a given activities timeline
+	 * Getter for blood sugar timeliene
 	 *
-	 * @param currentRate - Current sugar level
-	 * @param startIndex  - Represents minute index in the timeline
-	 * @param timeLength  - Activities span
-	 * @param addend      - Activities index (positive or negative)
-	 * @return - Last set rate
+	 * @return - List representing blood sugar timeline
 	 */
-	private static Double setTimeLineValues(Double currentRate, Integer startIndex, Integer timeLength, Double addend) {
-
-		int endIndex = ActivityHelper.calculateEndIndex(startIndex, timeLength);
-		double sugarLevel = currentRate;
-
-		for (int i = startIndex; i < endIndex; i++) {
-			sugarLevel = ActivityHelper.roundRate(sugarLevel + addend + bloodSugarTimeLine.get(i));
-			bloodSugarTimeLine.set(i, sugarLevel);
-		}
-
-		return sugarLevel;
+	public List<Double> getBloodSugarTimeLine() {
+		return _bloodSugarTimeLine;
 	}
 
 	/**
-	 * Sugar level shall be normalized when there is no activity
+	 * Getter for glycation level timeline
 	 *
-	 * @param currentRate - Last sugar level value
-	 * @param startIndex  - Normalization start minute
-	 * @param timeLength  - Time period until next activity begins
-	 * @return - Last calculated sugar level
+	 * @return - List representing glycation level
 	 */
-	private static Double adjustNoActivityTimeLineValues(Double currentRate, Integer startIndex, Integer timeLength) {
-
-		int endIndex = ActivityHelper.calculateEndIndex(startIndex, timeLength);
-		double sugarLevel = currentRate;
-		double addend = ActivityHelper.calculateBloodSugarRateChangePerMinute(ActivityType.NO_ACTIVITY.toString(), currentRate, startIndex);
-
-		//make sure when the level stabilizes during given stabilization period
-		// it stays so until next activity
-		for (int i = startIndex; i < endIndex; i++) {
-			sugarLevel = ActivityHelper.roundRate(sugarLevel + addend + bloodSugarTimeLine.get(i));
-
-			//make sure we're not going over or under 80 when normalizing
-			if ((addend > 0 && sugarLevel > ActivityHelper.NORMAL_SUGAR_COUNT) ||
-					(addend < 0 && sugarLevel < ActivityHelper.NORMAL_SUGAR_COUNT)) {
-				sugarLevel = ActivityHelper.NORMAL_SUGAR_COUNT;
-			}
-
-			bloodSugarTimeLine.set(i, sugarLevel);
-		}
-		return sugarLevel;
+	public List<Integer> getGlycationTimeLine() {
+		return _glycationTimeLine;
 	}
-
-
 }
