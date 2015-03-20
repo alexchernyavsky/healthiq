@@ -36,7 +36,7 @@ public class BloodSugarRateCalculator {
 
 			//build properties Map for further use (more generic)
 			if (props != null) {
-				_propertiesMap = new HashMap<String, String>();
+				_propertiesMap = new HashMap();
 				for (String key : props.stringPropertyNames()) {
 					_propertiesMap.put(key, props.getProperty(key));
 				}
@@ -63,12 +63,10 @@ public class BloodSugarRateCalculator {
 
 		File config = new File(configPath);
 
-
 		FileInputStream fileInput = new FileInputStream(config);
 		prop = new Properties();
 		prop.load(fileInput);
 		fileInput.close();
-
 
 		return prop;
 	}
@@ -77,7 +75,6 @@ public class BloodSugarRateCalculator {
 	 * Main method for calculating sugar level values
 	 *
 	 * @param listOfActivities - List of Activity objects
-	 * @return - List with sugar levels
 	 */
 	public void buildTimeLines(List<ActivityInfo> listOfActivities) {
 

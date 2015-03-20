@@ -19,6 +19,7 @@ public class DataAccessHelper {
 		Connection connection;
 
 		checkForRequiredKeys(connectionInfo);
+		Class.forName("org.postgresql.Driver");
 
 		String url = connectionInfo.get("JDBC_URL");
 		String user = connectionInfo.get("USER_NAME");
@@ -39,7 +40,7 @@ public class DataAccessHelper {
 			throw new Exception("JDBC url is missing");
 		}
 		if (!connectionInfo.containsKey("USER_NAME")) {
-			throw new Exception("DB User is missing");
+			throw new Exception("DB User id is missing");
 		}
 		if (!connectionInfo.containsKey("DB_PASSWORD")) {
 			throw new Exception("DB password  is missing");

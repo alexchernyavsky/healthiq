@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link href="bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <script src="bootstrap-3.3.4/js/bootstrap.js"></script>
+    <script>
+
+        var _xmlhttp;
+        var _xmlhttp2;
+
+        function initAjax() {
+            if (window.XMLHttpRequest) {
+                // code for IE7+, Firefox, Chrome, Opera, Safari
+                _xmlhttp = new XMLHttpRequest();
+            } else {
+                // code for IE6, IE5
+                _xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+        function initAjax2() {
+            if (window.XMLHttpRequest) {
+                // code for IE7+, Firefox, Chrome, Opera, Safari
+                _xmlhttp2 = new XMLHttpRequest();
+            } else {
+                // code for IE6, IE5
+                _xmlhttp2 = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+
+        function makeAjaxCall(request, action) {
+            request.open("GET", action, true);
+            request.send();
+        }
+
+
+        function loadMe() {
+
+            loadFoodActivities();
+            loadExerciseActivities();
+
+        }
+
+        function loadFoodActivities() {
+
+            initAjax();
+            _xmlhttp.onreadystatechange = function () {
+                if (_xmlhttp.readyState == 4 && _xmlhttp.status == 200) {
+                    buildFoodActivitiesList(_xmlhttp.responseText);
+                }
+                else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12029) {
+                    return false;
+                }
+                else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12007) {
+                    return false;
+                }
+            }
+
+            makeAjaxCall(_xmlhttp, "/healthiq/foodactivities/");
+        }
+
+        function loadExerciseActivities() {
+
+            initAjax2();
+            _xmlhttp2.onreadystatechange = function () {
+                if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 200) {
+                    buildExerciseActivitiesList(_xmlhttp2.responseText);
+                }
+                else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12029) {
+                    return false;
+                }
+                else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12007) {
+                    return false;
+                }
+            }
+
+            makeAjaxCall(_xmlhttp2, "/healthiq/exerciseactivities/");
+        }
+
+
+        function buildFoodActivitiesList(jsonStr) {
+            //alert(jsonStr);
+            var dropDown = document.getElementById("foodIndex");
+
+            var qList = jQuery.parseJSON(jsonStr);
+            var opt = document.createElement("option");
+            opt.text = "Select Type of Food";
+            opt.value = "SELECT";
+            dropDown.options.add(opt);
+
+            for (var i = 0; i < qList.length; i++) {
+                var opt = document.createElement("option");
+                opt.text = qList[i].name;
+                opt.value = qList[i].index;
+                dropDown.options.add(opt);
+            }
+        }
+
+        function buildExerciseActivitiesList(jsonStr) {
+            var dropDown = document.getElementById("exerciseIndex");
+
+            var qList = jQuery.parseJSON(jsonStr);
+            var opt = document.createElement("option");
+            opt.text = "Select Type of Exercise";
+            opt.value = "SELECT";
+            dropDown.options.add(opt);
+
+            for (var i = 0; i < qList.length; i++) {
+                var opt = document.createElement("option");
+                opt.text = qList[i].name;
+                opt.value = qList[i].index;
+                dropDown.options.add(opt);
+            }
+        }
+
+    </script>
+    <title>Blood Sugar Simulator</title>
+</head>
+<body onload="loadMe();">
+
+<div class="container">
+
+    Hello world!
+
+    <select class="btn btn-info dropdown-toggle" id="foodIndex"
+            name="foodIndex">
+        <option value="SELECT">Select Food</option>
+    </select>
+
+    <br>
+    <select class="btn btn-info dropdown-toggle" id="exerciseIndex"
+            name="exerciseIndex">
+        <option value="SELECT">Select Exercise</option>
+    </select>
+</div>
+
+
+</body>
+</html>
