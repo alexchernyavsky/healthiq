@@ -71,6 +71,10 @@ public class BloodSugarRateCalculator {
 		return prop;
 	}
 
+	public  Map<String, String> getPropertiesMap() {
+		return _propertiesMap;
+	}
+
 	/**
 	 * Main method for calculating sugar level values
 	 *

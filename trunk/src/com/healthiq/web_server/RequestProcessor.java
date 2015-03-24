@@ -5,6 +5,7 @@ package com.healthiq.web_server;
 import com.google.gson.Gson;
 import com.healthiq.business.BloodSugarRateCalculator;
 import com.healthiq.info.ActivityInfo;
+import com.healthiq.info.DataItemInfo;
 import com.healthiq.util.DataAccessHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Processes all client requests
@@ -83,24 +85,16 @@ public class RequestProcessor {
 			Gson gson = new Gson();
 
 			//start building json
-			respToClient.append("{ \"bloodSugar\":");
-			List<String> hTimeLine = new ArrayList<>();
-
-			int minuteInterval = 30;
-			for (int i = 0; i < bList.size(); i += minuteInterval) {
-				int timeIndex = i == 0 ? 0 : i - 1;
-				hTimeLine.add(String.valueOf(bList.get(timeIndex)));
-			}
+			respToClient.append("{ \"bloodSugarValues\":");
+			List<DataItemInfo> hTimeLine = DataAccessHelper.buildDateItemList(bloodSugarRateCalculator.getPropertiesMap(), bList);
 			respToClient.append(gson.toJson(hTimeLine));
 
 			hTimeLine.clear();
 
-			respToClient.append(", \"glycation\":");
-			for (int i = 0; i < gList.size(); i += minuteInterval) {
-				int timeIndex = i == 0 ? 0 : i - 1;
-				hTimeLine.add(String.valueOf(gList.get(timeIndex)));
-			}
+			respToClient.append(", \"glycationValues\":");
+			hTimeLine = DataAccessHelper.buildDateItemList(bloodSugarRateCalculator.getPropertiesMap(), gList);
 			respToClient.append(gson.toJson(hTimeLine));
+
 			respToClient.append("}");
 
 
@@ -110,5 +104,6 @@ public class RequestProcessor {
 		}
 		return Response.status(200).entity(respToClient.toString()).header("Content-Type", "application/json").build();
 	}
+
 
 }

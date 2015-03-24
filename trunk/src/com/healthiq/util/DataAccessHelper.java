@@ -2,12 +2,16 @@
 
 package com.healthiq.util;
 
+import com.healthiq.info.DataItemInfo;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +73,47 @@ public class DataAccessHelper {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Helper method building a scaled timeline
+	 *
+	 * @param props    - Propperties object
+	 * @param dataList - List with data values
+	 * @return - List with timed data items
+	 */
+	public static List<DataItemInfo> buildDateItemList(Map<String, String> props, List<? extends Number> dataList) {
+		List<DataItemInfo> hTimeLine = new ArrayList<>();
+
+		//the original list has one data item per minute.  To make graphs easier ot read,
+		//build time line with certain minute intervals between data points
+		int minuteInterval = Integer.parseInt(props.get("TIME_SCALE_INTERVAL_MIN"));
+		int hourValue = Integer.parseInt(props.get("DAY_BEGINNING_HOUR"));
+		int minuteInHour = Integer.parseInt(props.get("MINUTES_IN_HOUR"));
+		int minuteValue = 0;
+		int timeIndex = 0;
+		String timeVal;
+
+		//set hour and minute values for the scaled timeline
+		for (int i = 0; i <= dataList.size(); i += minuteInterval) {
+			if (i == 0) {
+				timeVal = hourValue + ".00";
+			} else {
+				timeIndex = i - 1;
+				minuteValue += minuteInterval;
+				if (minuteValue == minuteInHour) {
+					hourValue++;
+					minuteValue = 0;
+				}
+				timeVal = hourValue + "." + minuteValue;
+			}
+
+			DataItemInfo dItem = new DataItemInfo();
+			dItem.setTime(timeVal);
+			dItem.setValue(String.valueOf(dataList.get(timeIndex)));
+			hTimeLine.add(dItem);
+		}
+
+		return hTimeLine;
 	}
 }
