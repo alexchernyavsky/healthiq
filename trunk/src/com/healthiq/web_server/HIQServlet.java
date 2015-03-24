@@ -1,8 +1,3 @@
-/* @(#)HIQServlet
- * 
- * Copyright (c) 2015 Cepheid. All Rights Reserved.
- *
- */
 
 package com.healthiq.web_server;
 

@@ -2,6 +2,9 @@
 
 package com.healthiq.util;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -45,5 +48,26 @@ public class DataAccessHelper {
 		if (!connectionInfo.containsKey("DB_PASSWORD")) {
 			throw new Exception("DB password  is missing");
 		}
+	}
+
+	/**
+	 * Converts Input stream from request body into a String object
+	 *
+	 * @param in Input Stream
+	 * @return String representing input stream
+	 * @throws Exception
+	 */
+	public static String streamToString(InputStream in) throws Exception {
+		InputStreamReader is = new InputStreamReader(in);
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(is);
+		String read = br.readLine();
+
+		while (read != null) {
+			sb.append(read);
+			read = br.readLine();
+		}
+
+		return sb.toString();
 	}
 }

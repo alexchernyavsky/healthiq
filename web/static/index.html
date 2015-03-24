@@ -1,139 +1,289 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <link href="bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <script src="bootstrap-3.3.4/js/bootstrap.js"></script>
-    <script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<link href="bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<script src="bootstrap-3.3.4/js/bootstrap.js"></script>
+<script>
 
-        var _xmlhttp;
-        var _xmlhttp2;
+var _xmlhttp;
+var _xmlhttp2;
+var _xmlhttp3;
 
-        function initAjax() {
-            if (window.XMLHttpRequest) {
-                // code for IE7+, Firefox, Chrome, Opera, Safari
-                _xmlhttp = new XMLHttpRequest();
-            } else {
-                // code for IE6, IE5
-                _xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            }
+var _dayActivities = "";
+
+function initAjax() {
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        _xmlhttp = new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        _xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+}
+function initAjax2() {
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        _xmlhttp2 = new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        _xmlhttp2 = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+}
+function initAjax3() {
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        _xmlhttp3 = new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        _xmlhttp3 = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+}
+function makeAjaxCall(request, action) {
+    request.open("GET", action, true);
+    request.send();
+}
+function makePostAjaxCall(action, payload) {
+    _xmlhttp.open("POST", action, true);
+    _xmlhttp.send(payload);
+}
+
+function loadMe() {
+
+    loadFoodActivities();
+    loadExerciseActivities();
+
+}
+
+function simulate() {
+    initAjax3();
+    _xmlhttp3.onreadystatechange = function () {
+        if (_xmlhttp3.readyState == 4 && _xmlhttp3.status == 200) {
+            parseAnalyzedResults(_xmlhttp3.responseText);
         }
-        function initAjax2() {
-            if (window.XMLHttpRequest) {
-                // code for IE7+, Firefox, Chrome, Opera, Safari
-                _xmlhttp2 = new XMLHttpRequest();
-            } else {
-                // code for IE6, IE5
-                _xmlhttp2 = new ActiveXObject("Microsoft.XMLHTTP");
-            }
+        else if (_xmlhttp3.readyState == 4 && _xmlhttp3.status == 12029) {
+            return false;
         }
-
-        function makeAjaxCall(request, action) {
-            request.open("GET", action, true);
-            request.send();
+        else if (_xmlhttp3.readyState == 4 && _xmlhttp3.status == 12007) {
+            return false;
         }
+    }
+
+    makeAjaxCall("/healthiq/simulate/", _dayActivities);
+}
 
 
-        function loadMe() {
+function loadFoodActivities() {
 
-            loadFoodActivities();
-            loadExerciseActivities();
-
+    initAjax();
+    _xmlhttp.onreadystatechange = function () {
+        if (_xmlhttp.readyState == 4 && _xmlhttp.status == 200) {
+            buildFoodActivitiesList(_xmlhttp.responseText);
         }
-
-        function loadFoodActivities() {
-
-            initAjax();
-            _xmlhttp.onreadystatechange = function () {
-                if (_xmlhttp.readyState == 4 && _xmlhttp.status == 200) {
-                    buildFoodActivitiesList(_xmlhttp.responseText);
-                }
-                else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12029) {
-                    return false;
-                }
-                else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12007) {
-                    return false;
-                }
-            }
-
-            makeAjaxCall(_xmlhttp, "/healthiq/foodactivities/");
+        else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12029) {
+            return false;
         }
-
-        function loadExerciseActivities() {
-
-            initAjax2();
-            _xmlhttp2.onreadystatechange = function () {
-                if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 200) {
-                    buildExerciseActivitiesList(_xmlhttp2.responseText);
-                }
-                else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12029) {
-                    return false;
-                }
-                else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12007) {
-                    return false;
-                }
-            }
-
-            makeAjaxCall(_xmlhttp2, "/healthiq/exerciseactivities/");
+        else if (_xmlhttp.readyState == 4 && _xmlhttp.status == 12007) {
+            return false;
         }
+    }
 
+    makeAjaxCall(_xmlhttp, "/healthiq/foodactivities/");
+}
 
-        function buildFoodActivitiesList(jsonStr) {
-            //alert(jsonStr);
-            var dropDown = document.getElementById("foodIndex");
+function loadExerciseActivities() {
 
-            var qList = jQuery.parseJSON(jsonStr);
-            var opt = document.createElement("option");
-            opt.text = "Select Type of Food";
-            opt.value = "SELECT";
-            dropDown.options.add(opt);
-
-            for (var i = 0; i < qList.length; i++) {
-                var opt = document.createElement("option");
-                opt.text = qList[i].name;
-                opt.value = qList[i].index;
-                dropDown.options.add(opt);
-            }
+    initAjax2();
+    _xmlhttp2.onreadystatechange = function () {
+        if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 200) {
+            buildExerciseActivitiesList(_xmlhttp2.responseText);
         }
-
-        function buildExerciseActivitiesList(jsonStr) {
-            var dropDown = document.getElementById("exerciseIndex");
-
-            var qList = jQuery.parseJSON(jsonStr);
-            var opt = document.createElement("option");
-            opt.text = "Select Type of Exercise";
-            opt.value = "SELECT";
-            dropDown.options.add(opt);
-
-            for (var i = 0; i < qList.length; i++) {
-                var opt = document.createElement("option");
-                opt.text = qList[i].name;
-                opt.value = qList[i].index;
-                dropDown.options.add(opt);
-            }
+        else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12029) {
+            return false;
         }
+        else if (_xmlhttp2.readyState == 4 && _xmlhttp2.status == 12007) {
+            return false;
+        }
+    }
 
-    </script>
-    <title>Blood Sugar Simulator</title>
+    makeAjaxCall(_xmlhttp2, "/healthiq/exerciseactivities/");
+}
+
+function parseAnalyzedResults(jsonStr) {
+    alert(jsonStr);
+
+
+    //reset day activities for the next simulation
+    resetParameters();
+
+    //build charts here
+}
+
+function resetParameters() {
+    _dayActivities = "";
+    document.getElementById("exerciseIndex").selectedIndex = 0;
+    document.getElementById("foodIndex").selectedIndex = 0;
+    document.getElementById("activityHour").selectedIndex = 0;
+    document.getElementById("activityMinute").selectedIndex = 0;
+
+}
+
+function buildFoodActivitiesList(jsonStr) {
+    //alert(jsonStr);
+    var dropDown = document.getElementById("foodIndex");
+
+    var qList = jQuery.parseJSON(jsonStr);
+    var opt = document.createElement("option");
+    opt.text = "Select Type of Food";
+    opt.value = "SELECT";
+    dropDown.options.add(opt);
+
+    for (var i = 0; i < qList.length; i++) {
+        var opt = document.createElement("option");
+        opt.text = qList[i].name;
+        opt.value = qList[i].index;
+        dropDown.options.add(opt);
+    }
+}
+
+function buildExerciseActivitiesList(jsonStr) {
+    var dropDown = document.getElementById("exerciseIndex");
+
+    var qList = jQuery.parseJSON(jsonStr);
+    var opt = document.createElement("option");
+    opt.text = "Select Type of Exercise";
+    opt.value = "SELECT";
+    dropDown.options.add(opt);
+
+    for (var i = 0; i < qList.length; i++) {
+        var opt = document.createElement("option");
+        opt.text = qList[i].name;
+        opt.value = qList[i].index;
+        dropDown.options.add(opt);
+    }
+
+}
+
+function foodActivityOnChange() {
+    document.getElementById("exerciseIndex").selectedIndex = 0;
+}
+
+function exerciseActivityOnChange() {
+    document.getElementById("foodIndex").selectedIndex = 0;
+}
+
+function addActivity() {
+    validateInput();
+
+    if (_dayActivities == "") {
+        _dayActivities = "["
+    }
+    else {
+        _dayActivities += ",";
+    }
+    if (document.getElementById("exerciseIndex").selectedIndex > 0) {
+        _dayActivities += "{\"type\": \"EXERCISE\",";
+        _dayActivities += "\"index\":";
+        _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].value + ",";
+    }
+    else {
+        _dayActivities += "{\"type\": \"FOOD\",";
+        _dayActivities += "\"index\":";
+        _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].value + ",";
+    }
+    _dayActivities += "\"hour\":";
+    _dayActivities += document.getElementById("activityHour").options[document.getElementById("activityHour").selectedIndex].value + ",";
+    _dayActivities += "\"minute\":";
+    _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + ",";
+    _dayActivities += "\"name\":\"\"}";
+
+}
+
+function validateInput() {
+    if (document.getElementById("foodIndex").selectedIndex == 0 &&
+            document.getElementById("exerciseIndex").selectedIndex == 0) {
+        alert("Please select Food or Exercise activity");
+        return false;
+    }
+    if (document.getElementById("activityHour").selectedIndex == 0) {
+        alert("Please select Time");
+        return false;
+    }
+}
+
+function executeSimulation() {
+    _dayActivities += "]";
+    alert(_dayActivities);
+
+    simulate();
+}
+
+</script>
+<title>Blood Sugar Simulator</title>
 </head>
 <body onload="loadMe();">
 
 <div class="container">
 
-    Hello world!
+    <span style="text-align: center"><h3 class="text-muted">Blood Sugar Level Simulator</h3></span>
+    <br>
 
-    <select class="btn btn-info dropdown-toggle" id="foodIndex"
-            name="foodIndex">
-        <option value="SELECT">Select Food</option>
-    </select>
+    <div class="row">
+        <div class="col-xs-6 col-md-4"><select class="btn btn-info dropdown-toggle" id="foodIndex"
+                                               name="foodIndex" onchange="foodActivityOnChange()">
+            <option value="SELECT">Select Food</option>
+        </select></div>
+    </div>
 
     <br>
     <select class="btn btn-info dropdown-toggle" id="exerciseIndex"
-            name="exerciseIndex">
+            name="exerciseIndex" onchange="exerciseActivityOnChange()">
         <option value="SELECT">Select Exercise</option>
     </select>
+    <br>
+    <select class="btn btn-info dropdown-toggle" id="activityHour"
+            name="activityHour">
+        <option value="SELECT">Select Hour</option>
+        <option value="7">7:00 AM</option>
+        <option value="8">8:00 AM</option>
+        <option value="9">9:00 AM</option>
+        <option value="10">10:00 AM</option>
+        <option value="11">11:00 AM</option>
+        <option value="12">12:00 PM</option>
+        <option value="13">01:00 PM</option>
+        <option value="14">02:00 PM</option>
+        <option value="15">03:00 PM</option>
+        <option value="16">04:00 PM</option>
+        <option value="17">05:00 PM</option>
+        <option value="18">06:00 PM</option>
+        <option value="19">07:00 PM</option>
+        <option value="20">08:00 PM</option>
+        <option value="21">09:00 PM</option>
+        <option value="22">10:00 PM</option>
+    </select>
+    <br>
+    <select class="btn btn-info dropdown-toggle" id="activityMinute"
+            name="activityMinute">
+        <option value="0">Select Hour</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+    </select>
+    <br>
+    <button name="addActivity" id="addActivity" type="button"
+            class="btn btn-info btn-md" onClick="addActivity()">
+        <span class="glyphicon glyphicon-plus"></span> Add Activity to Timeline
+    </button>
+    <br>
+    <button name="executeSimulation" id="executeSimulation" type="button"
+            class="btn btn-info btn-md" onClick="executeSimulation()"
+            >
+        <span class="glyphicon glyphicon-play"></span> Execute Blood Sugar Simulation
+    </button>
 </div>
 
 
