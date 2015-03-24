@@ -56,7 +56,7 @@ public class RequestProcessor {
 
 	@POST
 	@Path("/simulate")
-	static Response runSimulation(
+	public static Response runSimulation(
 			//@Context UriInfo ui,
 			@Context HttpHeaders hh,
 			@Context HttpServletRequest req) {
@@ -108,7 +108,7 @@ public class RequestProcessor {
 			respToClient.append(e.getMessage());
 			e.printStackTrace();
 		}
-		return Response.status(200).entity(respToClient).header("Content-Type", "application/json").build();
+		return Response.status(200).entity(respToClient.toString()).header("Content-Type", "application/json").build();
 	}
 
 }

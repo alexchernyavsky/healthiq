@@ -46,8 +46,8 @@ function makeAjaxCall(request, action) {
     request.send();
 }
 function makePostAjaxCall(action, payload) {
-    _xmlhttp.open("POST", action, true);
-    _xmlhttp.send(payload);
+    _xmlhttp3.open("POST", action, true);
+    _xmlhttp3.send(payload);
 }
 
 function loadMe() {
@@ -71,7 +71,7 @@ function simulate() {
         }
     }
 
-    makeAjaxCall("/healthiq/simulate/", _dayActivities);
+    makePostAjaxCall("/healthiq/simulate/", _dayActivities);
 }
 
 
@@ -117,12 +117,12 @@ function parseAnalyzedResults(jsonStr) {
 
     //reset day activities for the next simulation
     resetParameters();
+    _dayActivities = "";
 
     //build charts here
 }
 
 function resetParameters() {
-    _dayActivities = "";
     document.getElementById("exerciseIndex").selectedIndex = 0;
     document.getElementById("foodIndex").selectedIndex = 0;
     document.getElementById("activityHour").selectedIndex = 0;
@@ -187,18 +187,23 @@ function addActivity() {
         _dayActivities += "{\"type\": \"EXERCISE\",";
         _dayActivities += "\"index\":";
         _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].value + ",";
+        _dayActivities += "\"name\":\"";
+        _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].text + "\",";
     }
     else {
         _dayActivities += "{\"type\": \"FOOD\",";
         _dayActivities += "\"index\":";
         _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].value + ",";
+        _dayActivities += "\"name\":\"";
+        _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].text + "\",";
     }
     _dayActivities += "\"hour\":";
     _dayActivities += document.getElementById("activityHour").options[document.getElementById("activityHour").selectedIndex].value + ",";
     _dayActivities += "\"minute\":";
-    _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + ",";
-    _dayActivities += "\"name\":\"\"}";
+    _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + "}";
 
+    drawActivityTable();
+    resetParameters();
 }
 
 function validateInput() {
@@ -215,11 +220,29 @@ function validateInput() {
 
 function executeSimulation() {
     _dayActivities += "]";
-    alert(_dayActivities);
+    //alert(_dayActivities);
 
     simulate();
+    _dayActivities = ""
 }
 
+function drawActivityTable() {
+    var aList = jQuery.parseJSON(_dayActivities + "]");
+    var htmlTable = '<div class="table-responsive"><table class="table table-hover"><thead><tr><th>Type</th><th>Activity</th><th>Time</th></tr></thead>';
+    for (var i = 0; i < aList.length; i++) {
+        var ampm = "AM"
+        if (aList[i].hour > 11 && aList[i].hour < 24) {
+            ampm = "PM";
+        }
+        hour = aList[i].hour == 24 ? "00" : hour;
+        var hour = aList[i].hour > 12 ? aList[i].hour - 12 : aList[i].hour;
+        var minute = aList[i].minute == 0 ? "00" : aList[i].minute;
+
+        htmlTable += "<tr><td>" + aList[i].type + "</td><td>" + aList[i].name + "</td><td>" + hour + ":" + minute + " " + ampm + "</td></tr>";
+    }
+    htmlTable += "</tbody></table></div>";
+    document.getElementById("activitiesTable").innerHTML = htmlTable;
+}
 </script>
 <title>Blood Sugar Simulator</title>
 </head>
@@ -233,14 +256,12 @@ function executeSimulation() {
     <div class="row">
         <div class="col-xs-6 col-md-4"><select class="btn btn-info dropdown-toggle" id="foodIndex"
                                                name="foodIndex" onchange="foodActivityOnChange()">
-            <option value="SELECT">Select Food</option>
         </select></div>
     </div>
 
     <br>
     <select class="btn btn-info dropdown-toggle" id="exerciseIndex"
             name="exerciseIndex" onchange="exerciseActivityOnChange()">
-        <option value="SELECT">Select Exercise</option>
     </select>
     <br>
     <select class="btn btn-info dropdown-toggle" id="activityHour"
@@ -266,7 +287,7 @@ function executeSimulation() {
     <br>
     <select class="btn btn-info dropdown-toggle" id="activityMinute"
             name="activityMinute">
-        <option value="0">Select Hour</option>
+        <option value="0">Select Minutes</option>
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="30">30</option>
@@ -284,6 +305,11 @@ function executeSimulation() {
             >
         <span class="glyphicon glyphicon-play"></span> Execute Blood Sugar Simulation
     </button>
+
+    <div id="activitiesTable">
+
+
+    </div>
 </div>
 
 
