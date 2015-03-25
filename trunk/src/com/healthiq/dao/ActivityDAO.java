@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Data Access Object for Activity info class
@@ -18,6 +20,7 @@ import java.util.Map;
  */
 
 public class ActivityDAO {
+	private static final Logger LOGGER = Logger.getLogger(ActivityDAO.class.getName());
 	private Map<String, String> _props;
 
 	/**
@@ -37,7 +40,7 @@ public class ActivityDAO {
 	 *
 	 * @return - List of exercise activities
 	 */
-	public List<ActivityInfo> retrieveExerciseActivities() {
+	public List<ActivityInfo> retrieveExerciseActivities() throws Exception {
 
 		List<ActivityInfo> aList = new ArrayList();
 
@@ -55,8 +58,8 @@ public class ActivityDAO {
 				aList.add(aInfo);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 
 		return aList;
@@ -67,7 +70,7 @@ public class ActivityDAO {
 	 *
 	 * @return - List of food activities
 	 */
-	public List<ActivityInfo> retrieveFoodActivities() {
+	public List<ActivityInfo> retrieveFoodActivities() throws Exception {
 
 		List<ActivityInfo> aList = new ArrayList();
 
@@ -85,8 +88,8 @@ public class ActivityDAO {
 				aList.add(aInfo);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.log(Level.SEVERE, e.getMessage());
+			throw e;
 		}
 
 		return aList;

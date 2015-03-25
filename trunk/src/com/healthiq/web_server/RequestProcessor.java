@@ -96,7 +96,7 @@ public class RequestProcessor {
 			BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
 
 			//build activities list
-			ArrayList<ActivityInfo> aInfoList = (ArrayList) ActivityInfo.fromJSONArray(reqBody);
+			List<ActivityInfo> aInfoList = (ArrayList) ActivityInfo.fromJSONArray(reqBody);
 			bloodSugarRateCalculator.buildTimeLines(aInfoList);
 
 			//get analyzed data

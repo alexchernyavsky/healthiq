@@ -172,13 +172,13 @@ public class BloodSugarRateCalculator {
 	 *
 	 * @return - List of exercise activities
 	 */
-	public List<ActivityInfo> getExerciseActivities() {
+	public List<ActivityInfo> getExerciseActivities() throws Exception {
 		try {
 			ActivityDAO dao = new ActivityDAO(_propertiesMap);
 			return dao.retrieveExerciseActivities();
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.log(Level.SEVERE, "Error during retrieval of exercise activities", e);
+			throw e;
 		}
 	}
 
@@ -187,13 +187,13 @@ public class BloodSugarRateCalculator {
 	 *
 	 * @return - List of food activities
 	 */
-	public List<ActivityInfo> getFoodActivities() {
+	public List<ActivityInfo> getFoodActivities() throws Exception {
 		try {
 			ActivityDAO dao = new ActivityDAO(_propertiesMap);
 			return dao.retrieveFoodActivities();
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			LOGGER.log(Level.SEVERE, "Error during retrieval of food activities", e);
+			throw e;
 		}
 	}
 }
