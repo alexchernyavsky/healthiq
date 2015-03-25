@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.healthiq.business.BloodSugarRateCalculator;
 import com.healthiq.info.ActivityInfo;
 import com.healthiq.info.DataItemInfo;
+import com.healthiq.util.ActivityHelper;
 import com.healthiq.util.DataAccessHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,14 +35,21 @@ public class RequestProcessor {
 	 */
 	public static Response getFoodActivities() {
 
-		BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
+		String clientResponse;
 
-		List<ActivityInfo> aList = bloodSugarRateCalculator.getFoodActivities();
-		Gson gson = new Gson();
-		gson.toJson(aList);
+		try {
+			BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
 
-		String activities = gson.toJson(aList);
-		return Response.ok().entity(activities).header("Content-Type", "application/json").build();
+			List<ActivityInfo> aList = bloodSugarRateCalculator.getFoodActivities();
+			Gson gson = new Gson();
+			gson.toJson(aList);
+
+			clientResponse = gson.toJson(aList);
+		} catch (Exception e) {
+			clientResponse = ActivityHelper.buildErrorJsonResponse(e.getMessage());
+		}
+
+		return Response.ok().entity(clientResponse).header("Content-Type", "application/json").build();
 	}
 
 	@GET
@@ -51,14 +59,19 @@ public class RequestProcessor {
 	 */
 	public static Response getExerciseActivities() {
 
-		BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
+		String clientResponse;
+		try {
+			BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
 
-		List<ActivityInfo> aList = bloodSugarRateCalculator.getExerciseActivities();
-		Gson gson = new Gson();
-		gson.toJson(aList);
+			List<ActivityInfo> aList = bloodSugarRateCalculator.getExerciseActivities();
+			Gson gson = new Gson();
+			gson.toJson(aList);
 
-		String activities = gson.toJson(aList);
-		return Response.ok().entity(activities).header("Content-Type", "application/json").build();
+			clientResponse = gson.toJson(aList);
+		} catch (Exception e) {
+			clientResponse = ActivityHelper.buildErrorJsonResponse(e.getMessage());
+		}
+		return Response.ok().entity(clientResponse).header("Content-Type", "application/json").build();
 	}
 
 	@POST
@@ -67,7 +80,6 @@ public class RequestProcessor {
 	 * Analyze sugar level and glycation and return the results
 	 */
 	public static Response runSimulation(
-			//@Context UriInfo ui,
 			@Context HttpHeaders hh,
 			@Context HttpServletRequest req) {
 
@@ -109,11 +121,10 @@ public class RequestProcessor {
 
 
 		} catch (Exception e) {
-			respToClient.append(e.getMessage());
-			e.printStackTrace();
+			respToClient.delete(0, respToClient.length());
+			respToClient.append(ActivityHelper.buildErrorJsonResponse(e.getMessage()));
 		}
 		return Response.status(200).entity(respToClient.toString()).header("Content-Type", "application/json").build();
 	}
-
 
 }

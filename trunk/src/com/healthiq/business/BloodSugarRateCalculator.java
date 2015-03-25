@@ -8,6 +8,8 @@ import com.sun.jmx.remote.internal.ArrayQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Holds main business logic
@@ -16,7 +18,7 @@ import java.util.*;
  */
 
 public class BloodSugarRateCalculator {
-
+	private static final Logger LOGGER = Logger.getLogger(BloodSugarRateCalculator.class.getName());
 	//initialize time line array
 	private List<Double> _bloodSugarTimeLine;
 	private List<Integer> _glycationTimeLine;
@@ -28,7 +30,7 @@ public class BloodSugarRateCalculator {
 	 *
 	 * @param configPath - Configuration path
 	 */
-	public BloodSugarRateCalculator(String configPath) {
+	public BloodSugarRateCalculator(String configPath) throws Exception {
 
 		try {
 			//initialize properties
@@ -46,9 +48,9 @@ public class BloodSugarRateCalculator {
 				throw new Exception("Failed to initialize properties");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error occurred while initialising BloodSugarRateCalculator", e);
+			throw e;
 		}
-
 	}
 
 	/**
@@ -71,7 +73,7 @@ public class BloodSugarRateCalculator {
 		return prop;
 	}
 
-	public  Map<String, String> getPropertiesMap() {
+	public Map<String, String> getPropertiesMap() {
 		return _propertiesMap;
 	}
 
@@ -87,6 +89,8 @@ public class BloodSugarRateCalculator {
 		_bloodSugarTimeLine = new ArrayList<>(Collections.nCopies(minutesInTimeLine, 0.0));
 		_glycationTimeLine = new ArrayList<>(Collections.nCopies(minutesInTimeLine, 0));
 		List<List<Double>> allActivitiesList = new ArrayQueue<>(listOfActivities.size());
+
+		LOGGER.info("Begin analysys");
 
 		//build a timeline for each activity
 		for (ActivityInfo aInfo : listOfActivities) {
@@ -114,10 +118,12 @@ public class BloodSugarRateCalculator {
 			if (sumRate == 0 && (currentRate > 0 && currentRate != normalizationRate)) {
 				if (currentRate > normalSugarCount) {
 					currentRate -= normalizationRate;
+
 					//round to NORMAL_SUGAR_COUNT
 					currentRate = currentRate < normalSugarCount ? normalSugarCount : currentRate;
 				} else if (currentRate < normalSugarCount) {
 					currentRate += normalizationRate;
+
 					//round to NORMAL_SUGAR_COUNT
 					currentRate = currentRate > normalSugarCount ? normalSugarCount : currentRate;
 				}
@@ -139,6 +145,8 @@ public class BloodSugarRateCalculator {
 				currGlycation = 0;
 			}
 		}
+
+		LOGGER.info("End analysys");
 	}
 
 	/**

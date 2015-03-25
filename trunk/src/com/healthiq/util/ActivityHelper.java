@@ -135,4 +135,14 @@ public class ActivityHelper {
 
 		return aTimeLine;
 	}
+
+	/**
+	 * Builds a JSON error message
+	 *
+	 * @param errorMsg - Message to embed
+	 * @return - JSON string representing error message
+	 */
+	public static String buildErrorJsonResponse(String errorMsg) {
+		return ("{\"error\": \"" + errorMsg + "\"}");
+	}
 }

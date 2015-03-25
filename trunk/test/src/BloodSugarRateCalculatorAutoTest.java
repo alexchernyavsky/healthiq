@@ -54,16 +54,20 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
-		calculator.buildTimeLines(aInfoList);
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+			calculator.buildTimeLines(aInfoList);
 
-		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
-		Assert.assertTrue(bloodSugarTimeLine != null);
-		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+			List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
+			Assert.assertTrue(bloodSugarTimeLine != null);
+			Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
 
-		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
-		Assert.assertTrue(glycationTimeLine != null);
-		Assert.assertTrue(!glycationTimeLine.isEmpty());
+			List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+			Assert.assertTrue(glycationTimeLine != null);
+			Assert.assertTrue(!glycationTimeLine.isEmpty());
+		} catch (Exception e) {
+			Assert.assertTrue(false);
+		}
 
 	}
 
@@ -75,16 +79,20 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
-		calculator.buildTimeLines(aInfoList);
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+			calculator.buildTimeLines(aInfoList);
 
-		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
-		Assert.assertTrue(bloodSugarTimeLine != null);
-		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+			List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
+			Assert.assertTrue(bloodSugarTimeLine != null);
+			Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
 
-		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
-		Assert.assertTrue(glycationTimeLine != null);
-		Assert.assertTrue(!glycationTimeLine.isEmpty());
+			List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+			Assert.assertTrue(glycationTimeLine != null);
+			Assert.assertTrue(!glycationTimeLine.isEmpty());
+		} catch (Exception e) {
+			Assert.assertTrue(false);
+		}
 
 	}
 
@@ -95,27 +103,35 @@ public class BloodSugarRateCalculatorAutoTest {
 
 		Assert.assertTrue(aInfoList != null);
 
-		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
-		calculator.buildTimeLines(aInfoList);
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+			calculator.buildTimeLines(aInfoList);
 
-		List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
-		Assert.assertTrue(bloodSugarTimeLine != null);
-		Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
+			List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
+			Assert.assertTrue(bloodSugarTimeLine != null);
+			Assert.assertTrue(!bloodSugarTimeLine.isEmpty());
 
-		List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
-		Assert.assertTrue(glycationTimeLine != null);
-		Assert.assertTrue(!glycationTimeLine.isEmpty());
+			List<Integer> glycationTimeLine = calculator.getGlycationTimeLine();
+			Assert.assertTrue(glycationTimeLine != null);
+			Assert.assertTrue(!glycationTimeLine.isEmpty());
+		} catch (Exception e) {
+			Assert.assertTrue(false);
+		}
 
 	}
 
 	@Test
 	public void retrieve_list_of_exercise_activities_success() {
 
-		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
 
-		List<ActivityInfo> aList = calculator.getExerciseActivities();
-		Assert.assertTrue(aList != null);
-		Assert.assertTrue(aList.size() == 6);
+			List<ActivityInfo> aList = calculator.getExerciseActivities();
+			Assert.assertTrue(aList != null);
+			Assert.assertTrue(aList.size() == 6);
+		} catch (Exception e) {
+			Assert.assertTrue(false);
+		}
 
 
 	}
@@ -123,11 +139,15 @@ public class BloodSugarRateCalculatorAutoTest {
 	@Test
 	public void retrieve_list_of_food_activities_success() {
 
-		BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
 
-		List<ActivityInfo> aList = calculator.getFoodActivities();
-		Assert.assertTrue(aList != null);
-		Assert.assertTrue(aList.size() == 112);
+			List<ActivityInfo> aList = calculator.getFoodActivities();
+			Assert.assertTrue(aList != null);
+			Assert.assertTrue(aList.size() == 112);
+		} catch (Exception e) {
+			Assert.assertTrue(false);
+		}
 
 
 	}

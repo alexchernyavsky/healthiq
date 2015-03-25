@@ -116,16 +116,19 @@ function loadExerciseActivities() {
 
 function parseAnalyzedResults(jsonStr) {
     //alert(jsonStr);
-
-
     //reset day activities for the next simulation
     resetParameters();
     _dayActivities = "";
 
     //build charts here
     var jsonObj = jQuery.parseJSON(jsonStr);
-    buildBloodSugarChart(jsonObj);
-    buildGlycationChart(jsonObj);
+    if (jsonObj.error != null) {
+        alert("Error: " + jsonObj.error.message);
+    }
+    else {
+        buildBloodSugarChart(jsonObj);
+        buildGlycationChart(jsonObj);
+    }
 }
 
 function resetParameters() {
@@ -141,16 +144,21 @@ function buildFoodActivitiesList(jsonStr) {
     var dropDown = document.getElementById("foodIndex");
 
     var qList = jQuery.parseJSON(jsonStr);
-    var opt = document.createElement("option");
-    opt.text = "Select Type of Food";
-    opt.value = "SELECT";
-    dropDown.options.add(opt);
-
-    for (var i = 0; i < qList.length; i++) {
+    if (qList.error != null) {
+        alert("Error loading food list: " + qList.error.message);
+    }
+    else {
         var opt = document.createElement("option");
-        opt.text = qList[i].name;
-        opt.value = qList[i].index;
+        opt.text = "Select Type of Food";
+        opt.value = "SELECT";
         dropDown.options.add(opt);
+
+        for (var i = 0; i < qList.length; i++) {
+            var opt = document.createElement("option");
+            opt.text = qList[i].name;
+            opt.value = qList[i].index;
+            dropDown.options.add(opt);
+        }
     }
 }
 
@@ -158,18 +166,22 @@ function buildExerciseActivitiesList(jsonStr) {
     var dropDown = document.getElementById("exerciseIndex");
 
     var qList = jQuery.parseJSON(jsonStr);
-    var opt = document.createElement("option");
-    opt.text = "Select Type of Exercise";
-    opt.value = "SELECT";
-    dropDown.options.add(opt);
-
-    for (var i = 0; i < qList.length; i++) {
-        var opt = document.createElement("option");
-        opt.text = qList[i].name;
-        opt.value = qList[i].index;
-        dropDown.options.add(opt);
+    if (qList.error != null) {
+        alert("Error loading exercise list: " + qList.error.message);
     }
+    else {
+        var opt = document.createElement("option");
+        opt.text = "Select Type of Exercise";
+        opt.value = "SELECT";
+        dropDown.options.add(opt);
 
+        for (var i = 0; i < qList.length; i++) {
+            var opt = document.createElement("option");
+            opt.text = qList[i].name;
+            opt.value = qList[i].index;
+            dropDown.options.add(opt);
+        }
+    }
 }
 
 function foodActivityOnChange() {
@@ -292,7 +304,7 @@ function drawSugarLevelChart(graphData) {
             easing: 'out'
         },
         vAxis: { title: "Level", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }},
-        hAxis: { title: "Time", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }, viewWindow: {min: 0}},
+        hAxis: { title: "Time", slantedText: true, minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }, viewWindow: {min: 0}},
         legend: { position: 'bottom' }
     };
 
@@ -326,7 +338,7 @@ function drawGlycationLevelChart(graphData) {
         },
         colors: ['red'],
         vAxis: { title: "Level", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }},
-        hAxis: { title: "Time", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }, viewWindow: {min: 0}},
+        hAxis: { title: "Time", slantedText: true, minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }, viewWindow: {min: 0}},
         legend: { position: 'bottom' }
     };
 
