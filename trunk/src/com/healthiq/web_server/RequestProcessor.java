@@ -17,7 +17,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Processes all client requests
@@ -30,6 +29,9 @@ public class RequestProcessor {
 
 	@GET
 	@Path("/foodactivities")
+	/**
+	 * Build and return the list of food activities from DB
+	 */
 	public static Response getFoodActivities() {
 
 		BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
@@ -44,6 +46,9 @@ public class RequestProcessor {
 
 	@GET
 	@Path("/exerciseactivities")
+	/**
+	 * Build and return the list of exercise activities from DB
+	 */
 	public static Response getExerciseActivities() {
 
 		BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
@@ -58,6 +63,9 @@ public class RequestProcessor {
 
 	@POST
 	@Path("/simulate")
+	/**
+	 * Analyze sugar level and glycation and return the results
+	 */
 	public static Response runSimulation(
 			//@Context UriInfo ui,
 			@Context HttpHeaders hh,
@@ -75,16 +83,17 @@ public class RequestProcessor {
 
 			BloodSugarRateCalculator bloodSugarRateCalculator = new BloodSugarRateCalculator(HIQServlet.getConfigPath());
 
+			//build activities list
 			ArrayList<ActivityInfo> aInfoList = (ArrayList) ActivityInfo.fromJSONArray(reqBody);
 			bloodSugarRateCalculator.buildTimeLines(aInfoList);
 
-			//get the data
+			//get analyzed data
 			List<Double> bList = bloodSugarRateCalculator.getBloodSugarTimeLine();
 			List<Integer> gList = bloodSugarRateCalculator.getGlycationTimeLine();
 
 			Gson gson = new Gson();
 
-			//start building json
+			//build response
 			respToClient.append("{ \"bloodSugarValues\":");
 			List<DataItemInfo> hTimeLine = DataAccessHelper.buildDateItemList(bloodSugarRateCalculator.getPropertiesMap(), bList);
 			respToClient.append(gson.toJson(hTimeLine));
@@ -95,6 +104,7 @@ public class RequestProcessor {
 			hTimeLine = DataAccessHelper.buildDateItemList(bloodSugarRateCalculator.getPropertiesMap(), gList);
 			respToClient.append(gson.toJson(hTimeLine));
 
+			//close JSON
 			respToClient.append("}");
 
 

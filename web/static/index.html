@@ -174,10 +174,14 @@ function buildExerciseActivitiesList(jsonStr) {
 
 function foodActivityOnChange() {
     document.getElementById("exerciseIndex").selectedIndex = 0;
+    document.getElementById("sugarLeverChart").style.display = "none";
+    document.getElementById("glycationChart").style.display = "none";
 }
 
 function exerciseActivityOnChange() {
     document.getElementById("foodIndex").selectedIndex = 0;
+    document.getElementById("sugarLeverChart").style.display = "none";
+    document.getElementById("glycationChart").style.display = "none";
 }
 
 function addActivity() {
@@ -209,7 +213,7 @@ function addActivity() {
     _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + "}";
 
     drawActivityTable();
-    resetParameters();
+    //resetParameters();
 }
 
 function validateInput() {
@@ -320,7 +324,7 @@ function drawGlycationLevelChart(graphData) {
             duration: 1000,
             easing: 'out'
         },
-        colors:['red'],
+        colors: ['red'],
         vAxis: { title: "Level", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }},
         hAxis: { title: "Time", minValue: 0, titleTextStyle: {bold: true, fontSize: 14 }, viewWindow: {min: 0}},
         legend: { position: 'bottom' }
@@ -369,66 +373,88 @@ function drawActivityTable() {
     <br>
 
     <div class="row">
+        <label for="exerciseIndex" class="control-label col-xs-2">1.</label>
+
         <div class="col-xs-6 col-md-4"><select class="btn btn-info dropdown-toggle" id="foodIndex"
                                                name="foodIndex" onchange="foodActivityOnChange()">
         </select></div>
     </div>
+    <div class="row">
+        <label for="exerciseIndex" class="control-label col-xs-2"> </label>
 
-    <br>
-    <select class="btn btn-info dropdown-toggle" id="exerciseIndex"
-            name="exerciseIndex" onchange="exerciseActivityOnChange()">
-    </select>
-    <br>
-    <select class="btn btn-info dropdown-toggle" id="activityHour"
-            name="activityHour">
-        <option value="SELECT">Select Hour</option>
-        <option value="7">7:00 AM</option>
-        <option value="8">8:00 AM</option>
-        <option value="9">9:00 AM</option>
-        <option value="10">10:00 AM</option>
-        <option value="11">11:00 AM</option>
-        <option value="12">12:00 PM</option>
-        <option value="13">01:00 PM</option>
-        <option value="14">02:00 PM</option>
-        <option value="15">03:00 PM</option>
-        <option value="16">04:00 PM</option>
-        <option value="17">05:00 PM</option>
-        <option value="18">06:00 PM</option>
-        <option value="19">07:00 PM</option>
-        <option value="20">08:00 PM</option>
-        <option value="21">09:00 PM</option>
-        <option value="22">10:00 PM</option>
-    </select>
-    <br>
-    <select class="btn btn-info dropdown-toggle" id="activityMinute"
-            name="activityMinute">
-        <option value="0">Select Minutes</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-    </select>
-    <br>
-    <button name="addActivity" id="addActivity" type="button"
-            class="btn btn-info btn-md" onClick="addActivity()">
-        <span class="glyphicon glyphicon-plus"></span> Add Activity to Timeline
-    </button>
-    <br>
-    <button name="executeSimulation" id="executeSimulation" type="button"
-            class="btn btn-info btn-md" onClick="executeSimulation()"
-            >
-        <span class="glyphicon glyphicon-play"></span> Execute Blood Sugar Simulation
-    </button>
+        <div class="col-xs-6 col-md-4"><select class="btn btn-info dropdown-toggle" id="exerciseIndex"
+                                               name="exerciseIndex" onchange="exerciseActivityOnChange()">
+        </select></div>
+    </div>
+    <div class="row"><br></div>
+    <div class="row">
+        <label for="activityHour" class="control-label col-xs-2">2.</label>
+
+        <div class="col-xs-6 col-md-2">
+            <select class="btn btn-info dropdown-toggle" id="activityHour"
+                    name="activityHour">
+                <option value="SELECT">Select Hour</option>
+                <option value="7">7:00 AM</option>
+                <option value="8">8:00 AM</option>
+                <option value="9">9:00 AM</option>
+                <option value="10">10:00 AM</option>
+                <option value="11">11:00 AM</option>
+                <option value="12">12:00 PM</option>
+                <option value="13">01:00 PM</option>
+                <option value="14">02:00 PM</option>
+                <option value="15">03:00 PM</option>
+                <option value="16">04:00 PM</option>
+                <option value="17">05:00 PM</option>
+                <option value="18">06:00 PM</option>
+                <option value="19">07:00 PM</option>
+                <option value="20">08:00 PM</option>
+                <option value="21">09:00 PM</option>
+                <option value="22">10:00 PM</option>
+            </select>
+        </div>
+        <div class="col-xs-6 col-md-4">
+            <select class="btn btn-info dropdown-toggle" id="activityMinute"
+                    name="activityMinute">
+                <option value="0">Select Minutes</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    </div>
+    <div class="row"><br></div>
+    <div class="row">
+        <label for="addActivity" class="control-label col-xs-2">3. </label>
+
+        <div class="col-xs-6 col-md-4">
+            <button name="addActivity" id="addActivity" type="button"
+                    class="btn btn-info btn-md" onClick="addActivity()">
+                <span class="glyphicon glyphicon-plus"></span> Add Activity to Timeline
+            </button>
+        </div>
+    </div>
+    <div class="row"><br></div>
+    <div class="row">
+        <label for="executeSimulation" class="control-label col-xs-2">4. </label>
+
+        <div class="col-xs-6 col-md-4">
+            <button name="executeSimulation" id="executeSimulation" type="button"
+                    class="btn btn-info btn-md" onClick="executeSimulation()"
+                    >
+                <span class="glyphicon glyphicon-play"></span> Execute Blood Sugar Simulation
+            </button>
+        </div>
+    </div>
+    <div class="row"><br><br></div>
 
     <div id="activitiesTable">
 
     </div>
-    <br><br>
+    <div class="row"><br></div>
 
     <div id="sugarLeverChart" style="width: 100%; height: 100%; position: relative;"></div>
-
-    <br>
 
     <div id="glycationChart" style="width: 100%; height: 100%; position: relative;"></div>
 </div>

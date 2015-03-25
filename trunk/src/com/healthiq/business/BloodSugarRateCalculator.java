@@ -133,7 +133,7 @@ public class BloodSugarRateCalculator {
 
 				_glycationTimeLine.set(i, currGlycation);
 			}
-
+			//TODO find out if resetting is necessary
 			//reset current glycation when blood sugar normalizes
 			if (currentRate == normalizationRate) {
 				currGlycation = 0;
