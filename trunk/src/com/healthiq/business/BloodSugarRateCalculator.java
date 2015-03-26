@@ -141,9 +141,9 @@ public class BloodSugarRateCalculator {
 			}
 			//TODO find out if resetting is necessary
 			//reset current glycation when blood sugar normalizes
-			if (currentRate == normalizationRate) {
-				currGlycation = 0;
-			}
+//			if (currentRate == normalSugarCount) {
+//				currGlycation = 0;
+//			}
 		}
 
 		LOGGER.info("End analysys");
