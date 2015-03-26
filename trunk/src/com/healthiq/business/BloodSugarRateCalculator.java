@@ -136,11 +136,13 @@ public class BloodSugarRateCalculator {
 			//process glycation
 			if (currentRate > glycationBeginsLevel) {
 				currGlycation += glycationIncrement;
-
-				_glycationTimeLine.set(i, currGlycation);
 			}
+
+			_glycationTimeLine.set(i, currGlycation);
 			//TODO find out if resetting is necessary
-			//reset current glycation when blood sugar normalizes
+			// Red blood cells have a consistent lifespan of 120 days so it looks like
+			// their glycation level stays until they're gone.
+
 //			if (currentRate == normalSugarCount) {
 //				currGlycation = 0;
 //			}
