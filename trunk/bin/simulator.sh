@@ -1,0 +1,2 @@
+#!/bin/bash
+java -classpath ../lib/asm-3.3.1.jar:../lib/commons-codec-1.7.jar:../lib/gson-2.2.2.jar:../lib/json-20090211.jar:../lib/json-smart-1.0.9.jar:../lib/json_simple-1.1.jar:../lib/jsonrpc2-base-1.35.jar:../lib/jsonrpc2-client-1.14.3.jar:../lib/postgresql-9.3-1102.jdbc41.jar:healthiq.jar com.healthiq.client.SimRunner $1 $2

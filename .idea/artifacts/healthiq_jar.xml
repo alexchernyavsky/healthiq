@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="healthiq:jar">
+    <output-path>$PROJECT_DIR$/trunk/bin</output-path>
+    <root id="archive" name="healthiq.jar">
+      <element id="module-output" name="healthiq" />
+    </root>
+  </artifact>
+</component>
