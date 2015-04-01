@@ -197,35 +197,36 @@ function exerciseActivityOnChange() {
 }
 
 function addActivity() {
-    validateInput();
 
-    if (_dayActivities == "") {
-        _dayActivities = "["
-    }
-    else {
-        _dayActivities += ",";
-    }
-    if (document.getElementById("exerciseIndex").selectedIndex > 0) {
-        _dayActivities += "{\"type\": \"EXERCISE\",";
-        _dayActivities += "\"index\":";
-        _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].value + ",";
-        _dayActivities += "\"name\":\"";
-        _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].text + "\",";
-    }
-    else {
-        _dayActivities += "{\"type\": \"FOOD\",";
-        _dayActivities += "\"index\":";
-        _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].value + ",";
-        _dayActivities += "\"name\":\"";
-        _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].text + "\",";
-    }
-    _dayActivities += "\"hour\":";
-    _dayActivities += document.getElementById("activityHour").options[document.getElementById("activityHour").selectedIndex].value + ",";
-    _dayActivities += "\"minute\":";
-    _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + "}";
+    if (validateInput()) {
+        if (_dayActivities == "") {
+            _dayActivities = "["
+        }
+        else {
+            _dayActivities += ",";
+        }
+        if (document.getElementById("exerciseIndex").selectedIndex > 0) {
+            _dayActivities += "{\"type\": \"EXERCISE\",";
+            _dayActivities += "\"index\":";
+            _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].value + ",";
+            _dayActivities += "\"name\":\"";
+            _dayActivities += document.getElementById("exerciseIndex").options[document.getElementById("exerciseIndex").selectedIndex].text + "\",";
+        }
+        else {
+            _dayActivities += "{\"type\": \"FOOD\",";
+            _dayActivities += "\"index\":";
+            _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].value + ",";
+            _dayActivities += "\"name\":\"";
+            _dayActivities += document.getElementById("foodIndex").options[document.getElementById("foodIndex").selectedIndex].text + "\",";
+        }
+        _dayActivities += "\"hour\":";
+        _dayActivities += document.getElementById("activityHour").options[document.getElementById("activityHour").selectedIndex].value + ",";
+        _dayActivities += "\"minute\":";
+        _dayActivities += document.getElementById("activityMinute").options[document.getElementById("activityMinute").selectedIndex].value + "}";
 
-    drawActivityTable();
-    //resetParameters();
+        drawActivityTable();
+        //resetParameters();
+    }
 }
 
 function validateInput() {
@@ -234,18 +235,23 @@ function validateInput() {
         alert("Please select Food or Exercise activity");
         return false;
     }
+
     if (document.getElementById("activityHour").selectedIndex == 0) {
         alert("Please select Time");
         return false;
     }
+    return true;
 }
 
 function executeSimulation() {
-    _dayActivities += "]";
-    //alert(_dayActivities);
+    if (validateInput()) {
 
-    simulate();
-    _dayActivities = ""
+        _dayActivities += "]";
+        //alert(_dayActivities);
+
+        simulate();
+        _dayActivities = ""
+    }
 }
 
 function buildBloodSugarChart(analyzedData) {
