@@ -42,6 +42,22 @@ public class DataAccessHelper {
 		return connection;
 	}
 
+	public static Connection getSQLiteConnection(Map<String, String> connectionInfo) throws Exception {
+		Connection connection;
+
+		Class.forName("org.sqlite.JDBC");
+		String SQLITE_DB_PATH = connectionInfo.get("SQLITE_DB_PATH");
+
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:" + SQLITE_DB_PATH);
+
+		} catch (SQLException e) {
+			throw new Exception("Failed to connect to DB", e);
+		}
+
+		return connection;
+	}
+
 	public static void checkForRequiredKeys(Map<String, String> connectionInfo) throws Exception {
 		if (!connectionInfo.containsKey("JDBC_URL")) {
 			throw new Exception("JDBC url is missing");

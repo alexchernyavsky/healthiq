@@ -13,6 +13,9 @@
         <element id="directory" name="lib">
           <element id="dir-copy" path="$PROJECT_DIR$/trunk/lib" />
         </element>
+        <element id="directory" name="db">
+          <element id="file-copy" path="$PROJECT_DIR$/healthiq.db" />
+        </element>
       </element>
     </root>
   </artifact>

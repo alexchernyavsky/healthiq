@@ -45,7 +45,7 @@ public class ActivityDAO {
 		List<ActivityInfo> aList = new ArrayList();
 
 		try {
-			Connection connection = DataAccessHelper.getConnection(_props);
+			Connection connection = DataAccessHelper.getSQLiteConnection(_props);
 
 			PreparedStatement ps = connection.prepareStatement("select * from exercise_index");
 			ResultSet rs = ps.executeQuery();
@@ -75,7 +75,7 @@ public class ActivityDAO {
 		List<ActivityInfo> aList = new ArrayList();
 
 		try {
-			Connection connection = DataAccessHelper.getConnection(_props);
+			Connection connection = DataAccessHelper.getSQLiteConnection(_props);
 
 			PreparedStatement ps = connection.prepareStatement("select * from food_index");
 			ResultSet rs = ps.executeQuery();
