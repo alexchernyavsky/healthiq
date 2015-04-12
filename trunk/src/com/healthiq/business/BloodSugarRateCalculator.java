@@ -82,7 +82,7 @@ public class BloodSugarRateCalculator {
 	 *
 	 * @param listOfActivities - List of Activity objects
 	 */
-	public void buildTimeLines(List<ActivityInfo> listOfActivities) {
+	public void buildTimeLines(List<ActivityInfo> listOfActivities) throws Exception {
 
 		//initialize timelines
 		int minutesInTimeLine = Integer.parseInt(_propertiesMap.get("MINUTES_IN_TIME_LINE"));

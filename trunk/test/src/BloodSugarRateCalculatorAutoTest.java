@@ -21,6 +21,7 @@ public class BloodSugarRateCalculatorAutoTest {
 	private static String testLoadTwoFoodActivitiesJson = "";
 	private static String testLoadOneFoodOneExActivitiesJson = "";
 	private static String testLoadTwoFoodsWithNoActivityGap = "";
+	private static String testLoadOneInvalidActivity = "";
 
 	@BeforeClass
 	public static void oneTimeSetUp() {
@@ -29,6 +30,7 @@ public class BloodSugarRateCalculatorAutoTest {
 			testLoadTwoFoodActivitiesJson = new String(Files.readAllBytes(Paths.get(CONFIG_PATH + File.separator + "two_foods.json")));
 			testLoadOneFoodOneExActivitiesJson = new String(Files.readAllBytes(Paths.get(CONFIG_PATH + File.separator + "one_food_one_ex.json")));
 			testLoadTwoFoodsWithNoActivityGap = new String(Files.readAllBytes(Paths.get(CONFIG_PATH + File.separator + "two_foods_with_no_activity_gap.json")));
+			testLoadOneInvalidActivity = new String(Files.readAllBytes(Paths.get(CONFIG_PATH + File.separator + "one_invalid_food.json")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -118,6 +120,27 @@ public class BloodSugarRateCalculatorAutoTest {
 			Assert.assertTrue(false);
 		}
 
+	}
+
+	@Test
+	public void calculate_using_one_invalid_food_activity_fail() {
+
+		ArrayList<ActivityInfo> aInfoList = (ArrayList) ActivityInfo.fromJSONArray(testLoadOneInvalidActivity);
+
+		Assert.assertTrue(aInfoList != null);
+
+		try {
+			BloodSugarRateCalculator calculator = new BloodSugarRateCalculator(CONFIG_PATH);
+			calculator.buildTimeLines(aInfoList);
+
+			List<Double> bloodSugarTimeLine = calculator.getBloodSugarTimeLine();
+
+			//if we get here, then validation failed
+			Assert.assertTrue(false);
+
+		} catch (Exception e) {
+			Assert.assertTrue(true);
+		}
 	}
 
 	@Test

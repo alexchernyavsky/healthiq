@@ -121,8 +121,11 @@ public class ActivityHelper {
 	 * @param aInfo      - Activity info object
 	 * @return - List representing Activity timeline
 	 */
-	public static List<Double> buildActivityTimeLine(Map<String, String> properties, ActivityInfo aInfo) {
+	public static List<Double> buildActivityTimeLine(Map<String, String> properties, ActivityInfo aInfo) throws Exception {
 		List<Double> aTimeLine = new ArrayList<>(Collections.nCopies(Integer.parseInt(properties.get("MINUTES_IN_TIME_LINE")), 0.0));
+
+		//validate activity's values
+		validateActivityValues(properties, aInfo);
 
 		int startIndex = ActivityHelper.calculateActivityStartIndex(properties, aInfo);
 		int timeLength = ActivityHelper.getTimeLengthForActivity(properties, aInfo.getType());
@@ -134,6 +137,30 @@ public class ActivityHelper {
 		}
 
 		return aTimeLine;
+	}
+
+	/**
+	 * Validate activity parameters
+	 *
+	 * @param properties - System properties map
+	 * @param aInfo      - Activity object
+	 * @throws Exception
+	 */
+	private static void validateActivityValues(Map<String, String> properties, ActivityInfo aInfo) throws Exception {
+
+		if (!(aInfo.getType().equals("FOOD") || aInfo.getType().equals("EXERCISE"))) {
+			throw new Exception("Value " + aInfo.getType() + " for activity's type is invalid");
+		}
+		if (!(aInfo.getMinute() >= 0 && aInfo.getMinute() < Integer.parseInt(properties.get("MINUTES_IN_HOUR")))) {
+			throw new Exception("Value " + aInfo.getMinute() + " for activity's minute is invalid");
+		}
+		if (!(aInfo.getHour() >= 0 && aInfo.getHour() <= 23)) {
+			throw new Exception("Value " + aInfo.getHour() + " for activity's hour is invalid");
+		}
+		if (aInfo.getIndex() <= 0) {
+			throw new Exception("Value " + aInfo.getIndex() + " for activity's index is invalid");
+		}
+
 	}
 
 	/**
